@@ -1,5 +1,5 @@
 % ============================================================
-%  thesis.sty — Preset personalizzato per tesi
+%  tesi.sty — Preset personalizzato per tesi
 % ============================================================
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{thesis}[2026/03/18 Preset per tesi]
@@ -178,7 +178,7 @@
     textfont      = normalfont,
 }
 \RequirePackage[
-    style        = verbose-note,
+    style        = authortitle,
     backend      = biber,
     autocite     = footnote,
     ibidtracker  = false,
@@ -208,18 +208,8 @@
 % Riviste tra virgolette caporali, non in corsivo
 \DeclareFieldFormat{journaltitle}{«#1»}
 
-% Citazioni successive: COGNOME, Titolo abbreviato cit., p. X
-\newbibmacro*{cite:verbose}{%
-    \ifciteseen
-        {\printnames{labelname}%
-         \setunit{\addcomma\addspace}%
-         \printfield{shorttitle}%
-         \addspace cit.}
-        {\usebibmacro{cite:full}}%
-}
-
-% Formato citazione completa
-\renewbibmacro*{cite:full}{%
+% Macro citazione completa
+\newbibmacro*{vivaldi:full}{%
     \printnames{author}%
     \setunit{\addcomma\addspace}%
     \printfield{title}%
@@ -231,6 +221,23 @@
     \printfield{year}%
 }
 
+% Macro citazione abbreviata — shorttitle se presente, altrimenti title
+\newbibmacro*{vivaldi:short}{%
+    \printnames{labelname}%
+    \setunit{\addcomma\addspace}%
+    \iffieldundef{shorttitle}
+        {\printfield{title}}
+        {\printfield{shorttitle}}%
+    \addspace cit.%
+}
+
+% Hook interno per prima/successive citazioni
+\renewbibmacro*{cite}{%
+    \ifciteseen
+        {\usebibmacro{vivaldi:short}}
+        {\usebibmacro{vivaldi:full}}%
+}
+
 % ------------------------------------------------------------
 %  Rimozione campi non necessari dalla bibliografia finale
 % ------------------------------------------------------------
@@ -238,8 +245,6 @@
     \clearfield{issn}%
     \clearfield{isbn}%
     \clearfield{doi}%
-    %\clearfield{url}%
-    %\clearfield{urldate}%
     \clearfield{eprint}%
     \clearfield{eprinttype}%
     \clearfield{abstract}%
@@ -247,6 +252,8 @@
     \clearfield{file}%
     \clearfield{keywords}%
     \clearfield{language}%
+    % url e urldate solo per risorse online, rimossi per tutto il resto
+    \ifentrytype{online}{}{\clearfield{url}\clearfield{urldate}}%
 }
 \RequirePackage{hyperref}         % link e PDF metadata
 \hypersetup{
