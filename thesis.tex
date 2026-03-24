@@ -1,0 +1,122 @@
+\documentclass[12pt, openright, titlepage]{book}
+\usepackage{thesis} %pacchetto .sty dedicato
+
+\addbibresource{bibliography.bib}
+
+% ------------------------------------------------------------
+% ------------------------------------------------------------
+%  BEGIN DOCUMENT
+% ------------------------------------------------------------
+% ------------------------------------------------------------
+
+\begin{document}
+% ------------------------------------------------------------
+%  FRONTMATTER, numerazione romana
+% ------------------------------------------------------------
+\frontmatter
+
+% ------------------------------------------------------------
+%  Frontespizio
+% ------------------------------------------------------------
+\input{frontbackmatter/titlepage.tex}
+
+% ------------------------------------------------------------
+%  Fundings Borsa 629-630
+% ------------------------------------------------------------
+% Pagina finanziamenti — senza numero, senza indice
+\chapter*{}                          % capitolo vuoto senza titolo
+\thispagestyle{empty}                % nessuna intestazione né numero
+\vspace*{\fill}                      % spinge il testo in basso
+{\small
+Dottorato finanziato nell'ambito del Piano Nazionale di Ripresa e Resilienza (PNRR), Missione 4 "Istruzione e Ricerca", Componente 1 “Potenziamento dell'offerta dei servizi di istruzione: dagli asili nido all'Università” - Investimento 3.4 "Didattica e competenze universitarie avanzate" e Investimento 4.1 "Estensione del numero di dottorati di ricerca e dottorati innovativi per la pubblica amministrazione e il patrimonio culturale".
+
+%Dottorato finanziato nell'ambito del Piano Nazionale di Ripresa e Resilienza (PNRR), Missione 4 "Istruzione e Ricerca", Componente 2 “Dalla Ricerca all'Impresa" - Investimento 3.3 "Introduzione di dottorati innovativi che rispondono ai fabbisogni di innovazione delle imprese e promuovono l'assunzione dei ricercatori da parte delle imprese". Cofinanziato da [nome dell'impresa].
+}
+\vspace*{\fill}
+\newpage
+
+% ------------------------------------------------------------
+%  Indice
+% ------------------------------------------------------------
+\tableofcontents
+
+% ------------------------------------------------------------
+%  Abstract
+% ------------------------------------------------------------
+\chapter{Abstract}
+\input{frontbackmatter/abstract}
+\markboth{Abstract}{Abstract} % Rimuove numero capitolo da barra superiore
+
+% ------------------------------------------------------------
+%  Acknowledgements
+% ------------------------------------------------------------
+\chapter{Acknowledgements}
+\input{frontbackmatter/acknowledgements}
+\markboth{Acknowledgements}{Acknowledgements} % Rimuove numero capitolo da barra superiore
+
+% ------------------------------------------------------------
+%  MAINMATTER, numerazione araba
+% ------------------------------------------------------------
+\mainmatter
+
+% ------------------------------------------------------------
+%  Introduction
+% ------------------------------------------------------------
+\chapter*{Introduction}
+\markboth{Introduction}{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+\input{chapters/introduction}
+
+% ------------------------------------------------------------
+%  Chapter 01
+% ------------------------------------------------------------
+\chapter{Chapter Title}
+\input{chapters/chapter01}
+
+% ------------------------------------------------------------
+%  Chapter 02
+% ------------------------------------------------------------
+\chapter{Chapter Title}
+\input{chapters/chapter02}
+
+% ------------------------------------------------------------
+%  Chapter 03
+% ------------------------------------------------------------
+\chapter{Chapter Title}
+\input{chapters/chapter03}
+
+% ------------------------------------------------------------
+%  Conclusions
+% ------------------------------------------------------------
+\chapter*{Conclusions}
+\markboth{Conclusions}{Conclusions}
+\addcontentsline{toc}{chapter}{Conclusions}
+\input{chapters/conclusions}
+
+% ------------------------------------------------------------
+%  BACKMATTER, numerazione araba
+% ------------------------------------------------------------
+\backmatter
+
+% ------------------------------------------------------------
+%  Appendix
+% ------------------------------------------------------------
+\chapter{Appendix}
+\input{chapters/appendix01}
+\markboth{Appendix}{Appendix} % Rimuove numero capitolo da barra superiore
+
+% ------------------------------------------------------------
+%  Bibliography
+% ------------------------------------------------------------
+\chapter{Bibliography}
+\markboth{Bibliography}{Bibliography}
+\printbibliography[heading=none]
+
+
+% ------------------------------------------------------------
+% ------------------------------------------------------------
+%  END DOCUMENT
+% ------------------------------------------------------------
+% ------------------------------------------------------------
+
+\end{document}

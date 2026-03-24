@@ -1,0 +1,25 @@
+# File ausiliari LaTeX
+build/
+*.aux
+*.log
+*.toc
+*.out
+*.bbl
+*.bcf
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.run.xml
+*.lof
+*.lot
+*.idx
+*.ilg
+*.ind
+
+# PDF (rimuovi questa riga se vuoi versionare il PDF)
+*.pdf
+
+# File di sistema
+.DS_Store
+Thumbs.db
