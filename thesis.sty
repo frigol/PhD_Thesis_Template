@@ -235,8 +235,8 @@
         \setunit{\addcomma\addspace}%
         \printfield{year}%
         \iffieldundef{pages}{}{%
-            \setunit{\addcomma\addspace}%
-            pp.\addspace\printfield{pages}}%
+            \printtext{\addcomma\addspace pp.\addspace}%
+            \printfield[noformat]{pages}}%
     }{%
         % Monografia: luogo, editore, anno, collana se presente
         \printlist{location}%
