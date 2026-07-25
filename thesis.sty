@@ -311,10 +311,11 @@
 
 % Comando per dichiarare una sezione di appendice:
 % incrementa il contatore, stampa "Lettera  Titolo", registra in indice
+% \texorpdfstring evita il warning hyperref dovuto a \quad nelle stringhe PDF
 \newcommand{\appendixsection}[1]{%
     \refstepcounter{appsec}%
-    \section*{\theappsec\quad #1}%
-    \addcontentsline{toc}{section}{\theappsec\quad #1}%
+    \section*{\texorpdfstring{\theappsec\quad}{\theappsec\ }#1}%
+    \addcontentsline{toc}{section}{\theappsec\ #1}%
 }
 
 \crefname{appsec}{Appendix}{Appendices}
