@@ -43,9 +43,9 @@ Riferimento rapido per `thesis.sty`, `worknotes.sty` e norme editoriali PRIMPHD.
 Corpo 11, rientro su entrambi i lati, senza virgolette, riga bianca prima e dopo. La nota bibliografica va **dopo** l'ambiente.
 
 ```latex
-\begin{citazionelonga}
+\begin{longcit}
     Testo della citazione lunga, in tondo, senza virgolette.
-\end{citazionelonga}
+\end{longcit}
 \autocite[pp.~nn--mm]{key}
 ```
 
@@ -90,7 +90,7 @@ In corsivo se non di uso comune; non declinate.
 ## 5. Risorse di rete
 
 ```latex
-\risorserete{https://www.conservatoriovivaldi.it}{06/10/2025}
+\webresource{https://www.conservatoriovivaldi.it}{06/10/2025}
 % → <https://www.conservatoriovivaldi.it> (ultima cons. 06/10/2025)
 ```
 
@@ -178,8 +178,8 @@ l'Adagio della Sonata op.~7
 Per riferimenti scritti a mano, fuori da `biblatex`.
 
 ```latex
-\autore{Alvise Vidolin}
-\autore{Denis Smalley}
+\authorname{Alvise Vidolin}
+\authorname{Denis Smalley}
 ```
 
 ---

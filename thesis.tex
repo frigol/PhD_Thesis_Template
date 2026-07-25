@@ -94,9 +94,17 @@
 % ------------------------------------------------------------
 %  Appendix
 % ------------------------------------------------------------
-\chapter{Appendix}
+\chapter*{Appendix}
+\addcontentsline{toc}{chapter}{Appendix}
+\markboth{Appendix}{Appendix}
+
+% Numerazione a lettere per le sezioni, senza prefisso di capitolo
+\renewcommand{\thesection}{\Alph{section}}
+\setcounter{secnumdepth}{1}
+
+\appendixsection{Title}
+\label{sec:app_xxx}
 \input{chapters/appendix01}
-\markboth{Appendix}{Appendix} % Rimuove numero capitolo da barra superiore
 
 % ------------------------------------------------------------
 %  Bibliography
