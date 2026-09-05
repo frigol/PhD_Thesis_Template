@@ -141,6 +141,12 @@
 \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
 
 % ------------------------------------------------------------
+%  Profondità indice — solo capitoli e sezioni, non sottosezioni
+%  (0=chapter, 1=section, 2=subsection: default classe book è 2)
+% ------------------------------------------------------------
+\setcounter{tocdepth}{1}
+
+% ------------------------------------------------------------
 %  Citazioni brevi — virgolette caporali « »
 % ------------------------------------------------------------
 \RequirePackage{csquotes}
@@ -238,6 +244,13 @@
             \printtext{\addcomma\addspace pp.\addspace}%
             \printfield[noformat]{pages}}%
     }{%
+    \ifentrytype{online}{%
+        % Risorsa online: ente/organizzazione (se presente), poi <url> (ultima cons. data)
+        \iffieldundef{organization}{}{%
+            \printlist{organization}%
+            \setunit{\addcomma\addspace}}%
+        \usebibmacro{url+urldate}%
+    }{%
         % Monografia: luogo, editore, anno, collana se presente
         \printlist{location}%
         \setunit{\addcomma\addspace}%
@@ -248,6 +261,7 @@
             \addspace(\printfield{series}%
             \iffieldundef{number}{}{\addcomma\addspace\printfield{number}}%
             )}%
+    }%
     }%
 }
 
@@ -274,6 +288,22 @@
 % ------------------------------------------------------------
 %  Rimozione campi non necessari dalla bibliografia finale
 % ------------------------------------------------------------
+% ------------------------------------------------------------
+%  Formato url/data di consultazione — norme PRIMPHD §7:
+%  <url> (ultima cons. gg/mm/aaaa), senza prefisso "url:",
+%  senza sottolineatura, data in italiano non in inglese
+% ------------------------------------------------------------
+\renewbibmacro*{url+urldate}{%
+    \iffieldundef{url}{}{%
+        \printtext{\textless}\printfield{url}\printtext{\textgreater}%
+        \iffieldundef{urlyear}{}{%
+            \addspace(ultima cons.\addspace
+            \two@digits{\thefield{urlday}}/%
+            \two@digits{\thefield{urlmonth}}/%
+            \thefield{urlyear})}%
+    }%
+}
+
 \AtEveryBibitem{%
     \clearfield{issn}%
     \clearfield{isbn}%
@@ -305,21 +335,71 @@
 % ------------------------------------------------------------
 \RequirePackage{cleveref}
 
+% ------------------------------------------------------------
+%  Interruttore lingua — per sezioni con doppia versione
+%  (italiano/inglese) selezionabile in fase di compilazione.
+%  Uso: \iflangenglish testo in inglese \else testo italiano \fi
+%  Default: inglese. Per compilare la versione italiana, cambia
+%  \langenglishtrue in \langenglishfalse qui sotto.
+% ------------------------------------------------------------
+\newif\iflangenglish
+\langenglishtrue   % <-- cambia in \langenglishfalse per output italiano
+
+% Forza l'iniziale maiuscola per TUTTI i riferimenti, sia \cref
+% che \Cref (comportamento uniforme con quello già impostato
+% per le appendici, invece della convenzione standard cleveref
+% dove \cref è minuscolo a metà frase e \Cref maiuscolo a inizio)
+\crefname{chapter}{Chapter}{Chapters}
+\Crefname{chapter}{Chapter}{Chapters}
+\crefname{section}{Section}{Sections}
+\Crefname{section}{Section}{Sections}
+\crefname{subsection}{Subsection}{Subsections}
+\Crefname{subsection}{Subsection}{Subsections}
+\crefname{figure}{Figure}{Figures}
+\Crefname{figure}{Figure}{Figures}
+\crefname{table}{Table}{Tables}
+\Crefname{table}{Table}{Tables}
+
 % Contatore dedicato alle appendici (indipendente da section/chapter)
 \newcounter{appsec}
 \renewcommand{\theappsec}{\Alph{appsec}}
 
 % Comando per dichiarare una sezione di appendice:
-% incrementa il contatore, stampa "Lettera  Titolo", registra in indice
+% incrementa il contatore, stampa "Lettera  Titolo" nello stesso
+% stile (font-size, spaziatura) dei capitoli numerati, registra in indice
 % \texorpdfstring evita il warning hyperref dovuto a \quad nelle stringhe PDF
+% Voce di indice dedicata alle appendici:
+% stesso meccanismo di \l@section (identico allineamento, peso,
+% spaziatura verticale e puntini delle sezioni numerate, es. "6.1")
+\newcommand*{\l@appendixsec}{\@dottedtocline{1}{1.5em}{2.3em}}
+
+% Dichiara il livello di segnalibro PDF per il tipo "appendixsec"
+% (stesso livello di \section, evita il warning hyperref/bookmark)
+\providecommand\toclevel@appendixsec{1}
+
 \newcommand{\appendixsection}[1]{%
     \refstepcounter{appsec}%
-    \section*{\texorpdfstring{\theappsec\quad}{\theappsec\ }#1}%
-    \addcontentsline{toc}{section}{\theappsec\ #1}%
+    \phantomsection
+    \addcontentsline{toc}{appendixsec}{\texorpdfstring{\theappsec\quad}{\theappsec\ }#1}%
+    \par\vspace{20pt}%
+    {\normalfont\fontsize{15}{17}\bfseries\selectfont
+        \texorpdfstring{\theappsec\quad}{\theappsec\ }#1\par}%
+    \vspace{10pt}%
+    \markboth{#1}{#1}%
 }
 
 \crefname{appsec}{Appendix}{Appendices}
 \Crefname{appsec}{Appendix}{Appendices}
+
+% ------------------------------------------------------------
+%  Glossario — ordinamento alfabetico automatico
+%  sort=standard: ordina alfabeticamente (ignora maiuscole/simboli)
+%  toc: aggiunge automaticamente "Glossary" all'indice
+%  nonumberlist: non stampa l'elenco delle pagine di utilizzo
+%    dopo ogni voce (elenco spesso lungo e poco leggibile)
+% ------------------------------------------------------------
+\RequirePackage[sort=standard, toc, nonumberlist]{glossaries}
+\makeglossaries
 
 % ------------------------------------------------------------
 %  Altri pacchetti personali
@@ -330,6 +410,10 @@
 \RequirePackage{pdfpages}       % importa PDF
 \RequirePackage{listings}       % importa codice
 \RequirePackage{xcolor}
+\RequirePackage{enumitem}       % personalizzazione liste/description (usato in glossary.tex)
+\RequirePackage{comment}        % per commentare blocchi di testo (es. versione italiana
+                                 % accantonata durante la traduzione) senza rischi legati
+                                 % a caratteri speciali o parentesi graffe non bilanciate
 
 \lstset{
     basicstyle    = \ttfamily\small,
