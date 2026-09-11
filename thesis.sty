@@ -221,6 +221,35 @@
 \DeclareFieldFormat{journaltitle}{«#1»}
 
 % ------------------------------------------------------------
+%  Testi normativi (@legislation) — titolo in tondo, non corsivo
+%  (una legge non è un'opera con titolo descrittivo, cfr. norme
+%  su nomi di enti/istituzioni)
+% ------------------------------------------------------------
+\DeclareFieldFormat[legislation]{title}{#1}
+
+% Driver di bibliografia dedicato — biblatex standard non include
+% un driver per @legislation (tipo usato da Zotero per "Statute"),
+% quindi và dichiarato esplicitamente per l'elenco finale
+\DeclareBibliographyDriver{legislation}{%
+    \usebibmacro{bibindex}%
+    \usebibmacro{begentry}%
+    \printnames{author}%
+    \setunit{\addcomma\addspace}%
+    \printfield{title}%
+    \newunit
+    \iffieldundef{number}{}{%
+        \printtext{n.\addspace}\printfield{number}%
+        \newunit}%
+    \printdate%
+    \newunit
+    \iffieldundef{venue}{}{\printfield{venue}\newunit}%
+    \iffieldundef{note}{}{\printfield{note}\newunit}%
+    \iffieldundef{url}{}{\usebibmacro{url+urldate}\newunit}%
+    \newunit\newblock
+    \usebibmacro{finentry}%
+}
+
+% ------------------------------------------------------------
 %  Citazione completa — prima occorrenza
 % ------------------------------------------------------------
 \newbibmacro*{vivaldi:full}{%
@@ -251,6 +280,19 @@
             \setunit{\addcomma\addspace}}%
         \usebibmacro{url+urldate}%
     }{%
+    \ifentrytype{legislation}{%
+        % Testo normativo: numero, data, nota (es. Gazzetta Ufficiale), url se presente
+        \iffieldundef{number}{}{%
+            \printtext{n.\addspace}\printfield{number}%
+            \setunit{\addcomma\addspace}}%
+        \printdate%
+        \iffieldundef{venue}{}{%
+            \setunit{\addcomma\addspace}\printfield{venue}}%
+        \iffieldundef{note}{}{%
+            \setunit{\addcomma\addspace}\printfield{note}}%
+        \iffieldundef{url}{}{%
+            \setunit{\addcomma\addspace}\usebibmacro{url+urldate}}%
+    }{%
         % Monografia: luogo, editore, anno, collana se presente
         \printlist{location}%
         \setunit{\addcomma\addspace}%
@@ -261,6 +303,7 @@
             \addspace(\printfield{series}%
             \iffieldundef{number}{}{\addcomma\addspace\printfield{number}}%
             )}%
+    }%
     }%
     }%
 }
