@@ -172,7 +172,7 @@
 %  Web resources — format <url> (last accessed)
 % ------------------------------------------------------------
 \RequirePackage{url}
-\newcommand{\webresource}[2]{\textless\url{#1}\textgreater\ (ultima cons.\ #2)}
+\newcommand{\webresource}[2]{\textless\url{#1}\textgreater\ (accessed\ #2)}
 
 % ------------------------------------------------------------
 %  Pacchetti utili per la tesi
@@ -193,6 +193,12 @@
     pagetracker  = false,
     citetracker  = true,
 ]{biblatex}
+
+% ------------------------------------------------------------
+%  Footnote package — footnote sicure dentro minipage/tabular
+%  (es. captionof + autocite in figure affiancate con minipage)
+% ------------------------------------------------------------
+\RequirePackage{footnote}
 
 % ------------------------------------------------------------
 %  Personalizzazione stile bibliografico — norme Vivaldi
@@ -274,7 +280,7 @@
             \printfield[noformat]{pages}}%
     }{%
     \ifentrytype{online}{%
-        % Risorsa online: ente/organizzazione (se presente), poi <url> (ultima cons. data)
+        % Risorsa online: ente/organizzazione (se presente), poi <url> (accessed data)
         \iffieldundef{organization}{}{%
             \printlist{organization}%
             \setunit{\addcomma\addspace}}%
@@ -333,14 +339,14 @@
 % ------------------------------------------------------------
 % ------------------------------------------------------------
 %  Formato url/data di consultazione — norme PRIMPHD §7:
-%  <url> (ultima cons. gg/mm/aaaa), senza prefisso "url:",
-%  senza sottolineatura, data in italiano non in inglese
+%  <url> (accessed dd/mm/yyyy), senza prefisso "url:",
+%  senza sottolineatura
 % ------------------------------------------------------------
 \renewbibmacro*{url+urldate}{%
     \iffieldundef{url}{}{%
         \printtext{\textless}\printfield{url}\printtext{\textgreater}%
         \iffieldundef{urlyear}{}{%
-            \addspace(ultima cons.\addspace
+            \addspace(accessed\addspace
             \two@digits{\thefield{urlday}}/%
             \two@digits{\thefield{urlmonth}}/%
             \thefield{urlyear})}%
@@ -457,6 +463,16 @@
 \RequirePackage{comment}        % per commentare blocchi di testo (es. versione italiana
                                  % accantonata durante la traduzione) senza rischi legati
                                  % a caratteri speciali o parentesi graffe non bilanciate
+
+% ------------------------------------------------------------
+%  TikZ — diagrammi a blocchi
+%  Caricato esplicitamente qui (non solo tramite tcolorbox in
+%  worknotes.sty) perché worknotes.sty è incluso DOPO thesis.sty
+%  in thesis.tex: senza questo, \usetikzlibrary non sarebbe ancora
+%  definito al momento del caricamento di questo file.
+% ------------------------------------------------------------
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit}
 
 \lstset{
     basicstyle    = \ttfamily\small,
