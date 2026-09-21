@@ -100,6 +100,8 @@ In corsivo se non di uso comune; non declinate.
 
 I `\label` dei **capitoli** vanno in `thesis.tex` subito dopo `\chapter{}`. I `\label` di sezioni e sottosezioni vanno nei file `chapter0X.tex` subito dopo `\section{}` o `\subsection{}`.
 
+I riferimenti nel testo usano `cleveref` (`\cref` / `\Cref`), che genera automaticamente il nome del tipo di riferimento (Chapter, Section, Appendix...) senza doverlo scrivere a mano.
+
 ```latex
 % Definire l'etichetta (punto di destinazione)
 \chapter{Titolo}
@@ -111,17 +113,36 @@ I `\label` dei **capitoli** vanno in `thesis.tex` subito dopo `\chapter{}`. I `\
 \subsection{Titolo}
 \label{subsec:chiave}
 
-% Richiamare nel testo (~ = spazio non separabile)
-Capitolo~\ref{cap:chiave}
-la sezione~\ref{sec:chiave}
-cfr.~§~\ref{subsec:chiave}
-p.~\pageref{sec:chiave}
+% Richiamare nel testo — cref genera automaticamente "Chapter"/"Section"/ecc.
+\cref{cap:chiave}      % → "chapter 3"
+\Cref{cap:chiave}      % → "Chapter 3" (maiuscolo, a inizio frase)
+\cref{sec:chiave}      % → "section 3.2"
+p.~\pageref{sec:chiave}   % numero di pagina (resta \pageref, non cambia)
 
 % Esempio completo
-come si discuterà nel Capitolo~\ref{cap:interprete} (p.~\pageref{cap:interprete})
+come si discuterà in \cref{cap:interprete} (p.~\pageref{cap:interprete})
 ```
 
-> **Nota:** LaTeX risolve i `\ref` in due passate di compilazione. Se compare `??` nel PDF, ricompilare.
+> **Nota:** LaTeX risolve i `\cref`/`\ref` in due passate di compilazione. Se compare `??` nel PDF, ricompilare.
+
+> **Nota:** `\Cref{}` (C maiuscola) va usato a inizio frase; `\cref{}` (minuscolo) all'interno della frase.
+
+---
+
+## 6bis. Riferimenti alle appendici
+
+Le appendici usano un contatore dedicato (`appsec`) associato al comando `\appendixsection{}`, definito in `thesis.sty`. `\cref` riconosce questo contatore e genera automaticamente "Appendix X".
+
+```latex
+% In thesis.tex, dentro \chapter*{Appendici}
+\appendixsection{Titolo dell'appendice}
+\label{sec:app_chiave}
+\input{chapters/appendixNN}
+
+% Nel testo
+si veda \cref{sec:app_chiave}      % → "appendix C"
+\Cref{sec:app_chiave} descrive...   % → "Appendix C descrive..."
+```
 
 ---
 
@@ -197,8 +218,8 @@ Didascalie senza punto finale, allineamento centrale (già impostato in `thesis.
 \end{figure}
 
 % Riferimento nel testo
-la Figura~\ref{fig:chiave}
-la Tabella~\ref{tab:chiave}
+\cref{fig:chiave}      % → "figure 3"
+\cref{tab:chiave}      % → "table 2"
 ```
 
 ---
@@ -253,3 +274,95 @@ Sezioni nell'indice senza numerazione:
 \setcounter{tocdepth}{2}      % mostra nell'indice fino a \subsection
 \input{chapters/appendix01}
 ```
+
+> **Nota:** questa sezione descrive un'implementazione precedente. L'appendice attuale usa `\chapter*{Appendix}` + il comando `\appendixsection{}` (contatore dedicato `appsec`, lettere A/B/C..., voce di indice tramite `\l@appendixsec` personalizzato) descritto nella sezione 6bis. Se vuoi, posso riscrivere questa sezione 15 per allinearla all'implementazione reale in `thesis.sty`.
+
+---
+
+## 16. Glossario
+
+Le voci del glossario si trovano in `frontbackmatter/glossary.tex`, gestite dal pacchetto `glossaries` (caricato in `thesis.sty` con `sort=standard, toc, nonumberlist`). Ogni voce si definisce con `\newglossaryentry`:
+
+```latex
+\newglossaryentry{beamforming}{
+    name={Beamforming},
+    description={Definizione del termine...}
+}
+
+\newglossaryentry{spatial}{
+    name={Spatial},
+    description={Definizione del termine...}
+}
+```
+
+**✅ Ordinamento alfabetico automatico:** le voci possono essere scritte in QUALSIASI ordine nel file sorgente — `glossaries` le ordina da solo in fase di compilazione (opzione `sort=standard`). Non serve inserirle manualmente nella posizione corretta.
+
+**Per termini con formattazione o simboli nel nome** (es. `HOA (\textit{Higher-Order Ambisonics})`, `QDI (\textit{...})`), aggiungi il campo `sort={...}` con il testo puro da usare come chiave di ordinamento, altrimenti il markup LaTeX interno può confondere l'algoritmo di sort:
+
+```latex
+\newglossaryentry{hoa}{
+    name={HOA (\textit{Higher-Order Ambisonics})},
+    sort={HOA},
+    description={...}
+}
+```
+
+**Nel `thesis.tex`**, il glossario si stampa così — non serve scrivere `\chapter*{Glossary}` a mano, `\printglossary` lo genera da solo (grazie all'opzione `toc`):
+
+```latex
+\input{frontbackmatter/glossary}
+\printglossary[title={Glossary}]
+```
+
+**Per richiamare una voce dal corpo del testo:**
+
+```latex
+come mostra \gls{spatial}, ...
+\Gls{quintina} emerge come...   % maiuscola a inizio frase, come \Cref
+```
+
+`\gls{chiave}` stampa il termine **e** crea un link cliccabile alla sua definizione nel glossario — sostituisce sia il testo che il riferimento in un unico comando.
+
+**⚠️ Passaggio di compilazione aggiuntivo richiesto:** `makeglossaries` deve girare tra un passaggio LaTeX e l'altro, come `biber` per la bibliografia:
+
+```
+pdflatex thesis
+makeglossaries thesis
+pdflatex thesis
+pdflatex thesis
+```
+
+Con **latexmk**, aggiungi al tuo `latexmkrc`:
+
+```perl
+add_cus_dep('glo', 'gls', 0, 'makeglossaries');
+$clean_ext .= " glo gls glg";
+```
+
+---
+
+## 17. Commenti di lavoro con data/ora (comments.sty)
+
+Diverso da `worknotes.sty` (note strutturate per sezione): `comments.sty` serve per appunti puntuali agganciati a un momento preciso di scrittura, tipo "post-it" cronologici sparsi nel testo mentre lavori.
+
+**⚠️ Limite tecnico:** LaTeX non può rilevare automaticamente *quando* hai scritto una riga di testo — può solo stampare la data della compilazione corrente (`\today`), che cambia ogni volta che ricompili. Per questo la data/ora va scritta a mano, come primo argomento, esattamente come un messaggio di commit.
+
+```latex
+% Commento con data/ora scritta a mano (consigliato)
+\tcomment{17/03/2026, 15:40}{Verificare se questa citazione va
+spostata nel Cap. 5 una volta scritto il §5.4.4.}
+
+% Variante rapida: usa la data di compilazione corrente
+% (riflette solo l'ultima ricompilazione, non quando è stato scritto davvero)
+\tcommentnow{Controllare questa frase, suona strana}
+```
+
+Produce un box giallo con "Commento — [data]" come titolo e il testo del commento sotto.
+
+**Per disattivare tutti i commenti in blocco** prima della consegna, in `comments.sty`:
+
+```latex
+\showcommentstrue   →   \showcommentsfalse
+```
+
+I file dei capitoli restano invariati — stesso principio di `\worknotesfalse` per `worknotes.sty`.
