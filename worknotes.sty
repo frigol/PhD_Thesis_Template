@@ -1,0 +1,39 @@
+% ------------------------------------------------------------
+%  worknotes.sty — Working notes for thesis drafting
+%
+%  Usage: \usepackage{worknotes} in the preamble of thesis.tex
+%         (after thesis.sty).
+%
+%  Four commands (see the reader's note for descriptions):
+%    \notecontent{...}   planned content of the section
+%    \noteopen{...}      open question (editorial or research)
+%    \noterefs{...}      bibliographic references to integrate
+%    \notestatus{...}    drafting status
+%
+%  For the final version: set \worknotesfalse below. All notes
+%  disappear from the PDF; the chapter files are left untouched.
+% ------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{worknotes}[2026/06/11 Thesis working notes]
+\RequirePackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\newif\ifworknotes
+\worknotestrue % <-- for the final version: \worknotesfalse
+
+\ifworknotes
+  \newtcolorbox{wnbox}[2]{breakable,
+    colback=#1!6, colframe=#1!55!black,
+    boxrule=0.6pt, arc=1.5mm,
+    left=2mm, right=2mm, top=1.2mm, bottom=1.2mm,
+    before upper={\small\textbf{#2.}\ }, fontupper=\small}
+  \newcommand{\notecontent}[1]{\begin{wnbox}{blue}{Planned content}#1\end{wnbox}}
+  \newcommand{\noteopen}[1]{\begin{wnbox}{red}{Open question}#1\end{wnbox}}
+  \newcommand{\noterefs}[1]{\begin{wnbox}{green!50!black}{References to integrate}#1\end{wnbox}}
+  \newcommand{\notestatus}[1]{\begin{wnbox}{gray}{Status}#1\end{wnbox}}
+\else
+  \newcommand{\notecontent}[1]{}
+  \newcommand{\noteopen}[1]{}
+  \newcommand{\noterefs}[1]{}
+  \newcommand{\notestatus}[1]{}
+\fi

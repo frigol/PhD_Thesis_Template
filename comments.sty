@@ -1,0 +1,57 @@
+% ============================================================
+%  comments.sty — Commenti di lavoro con data/ora manuale
+%  Modellato su worknotes.sty: box colorato, disattivabile
+%  in blocco prima della consegna.
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{comments}[2026/03/17 Commenti di lavoro con timestamp]
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+% ------------------------------------------------------------
+%  Interruttore — disattiva tutti i commenti prima della consegna
+%  senza dover cancellare le singole righe \tcomment{...}
+% ------------------------------------------------------------
+\newif\ifshowcomments
+\showcommentstrue   % <-- cambia in \showcommentsfalse per nasconderli tutti
+
+% ------------------------------------------------------------
+%  \tcomment{data e ora}{testo del commento}
+%
+%  ATTENZIONE: LaTeX non può rilevare automaticamente QUANDO hai
+%  scritto il commento — può solo stampare la data di compilazione
+%  corrente (\today), che cambia a ogni ricompilazione. Per questo
+%  la data/ora va scritta a mano, come primo argomento, esattamente
+%  come quando scrivi un messaggio di commit.
+%
+%  Esempio:
+%    \tcomment{17/03/2026, 15:40}{Verificare se questa citazione
+%    va spostata nel Cap. 5 una volta scritto il §5.4.4.}
+% ------------------------------------------------------------
+\newcommand{\tcomment}[2]{%
+    \ifshowcomments
+        \begin{tcolorbox}[
+            breakable,
+            colback=yellow!10,
+            colframe=yellow!60!black,
+            title={Commento --- #1},
+            fonttitle=\bfseries\small,
+            fontupper=\small
+        ]
+        #2
+        \end{tcolorbox}
+    \fi
+}
+
+% ------------------------------------------------------------
+%  \tcommentnow{testo} — variante rapida: usa la data di
+%  compilazione corrente invece di scriverla a mano. Utile solo
+%  per appunti "al volo", NON per tracciare quando è stato scritto
+%  davvero (perché cambia ogni volta che ricompili il documento).
+% ------------------------------------------------------------
+\newcommand{\tcommentnow}[1]{%
+    \tcomment{\today}{#1}%
+}
+
+\endinput
